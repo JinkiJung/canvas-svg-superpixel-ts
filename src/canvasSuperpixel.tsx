@@ -1,11 +1,12 @@
 import React, { useRef, useState } from "react";
 import { Annotation } from "./superpixel";
 import { Superpixel } from "./superpixel";
+const svgToPng = require("save-svg-as-png");
 
-var keys :number[] = [];
+let keys :number[] = [];
 
 const getAnnotationData = (key: number, array: Annotation[], defaultAnnotating: Annotation): Annotation => {
-    for (var e of array) {
+    for (let e of array) {
         if (e.index === key) return { tag: e.tag, color: e.color };
       }
     return defaultAnnotating;
@@ -31,6 +32,12 @@ export const CanvasSuperpixel: React.FC<CanvasSuperpixelProps> = ({ keyId, fileN
     canvasRef.current?.setAttribute("color-profile", color);
   }
 
+  const exportToPng = () => {
+    let fileNameSplit = fileName.split("/");
+    let file = fileNameSplit[fileNameSplit.length - 1];
+    svgToPng.saveSvgAsPng(canvasRef.current, file.split(".")[0] + ".png", {backgroundColor: "#000000"});
+  }
+
   const [ annotating ] = useState(new Annotation(-1, defaultcolor));
   if (keys.length === 0) for (let k in segmentationData) keys.push(parseInt(k));
   const viewBoxString = [0, 0, width, height].join(" ");
@@ -46,6 +53,7 @@ export const CanvasSuperpixel: React.FC<CanvasSuperpixelProps> = ({ keyId, fileN
             {color}
           </button>
         ))}
+        <button className="export-button" onClick={exportToPng}>export</button>
       </div>
       <div className="img-overlay-wrap">
         <img src={fileName} width={width} height={height} alt={"test"} />

@@ -1633,6 +1633,11 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/mina@*":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@types/mina/-/mina-0.4.2.tgz#44fd3cf03cb3f376281e1b7b6e0248b9e1f19e5d"
+  integrity sha512-qg+Gd+jtet6YuuZ4HybzVGFM37CuT+j8iQ+JRNPN22J2S1+FVaf59SOiCZAj3bzcYHcwCE8x4NYE0sHSGkUt/Q==
+
 "@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
@@ -1694,6 +1699,13 @@
   integrity sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==
   dependencies:
     "@types/node" "*"
+
+"@types/snapsvg@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@types/snapsvg/-/snapsvg-0.5.0.tgz#01ca6f37ff567d01448444845f6d53c1bfe58954"
+  integrity sha512-epmNLxsCGYvg1tSodnZo5bGJ24KD0hYnALXBhr1m0k1vcMYxjEx2PETlYrrGREzGvRQnDg850DhOtghRtoDVtg==
+  dependencies:
+    "@types/mina" "*"
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -4585,6 +4597,11 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
+
+eve@~0.5.1:
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/eve/-/eve-0.5.4.tgz#67d080b9725291d7e389e34c26860dd97f1debaa"
+  integrity sha1-Z9CAuXJSkdfjieNMJoYN2X8d66o=
 
 eventemitter3@^4.0.0:
   version "4.0.7"
@@ -9589,6 +9606,11 @@ sass-loader@8.0.2:
     schema-utils "^2.6.1"
     semver "^6.3.0"
 
+save-svg-as-png@^1.4.17:
+  version "1.4.17"
+  resolved "https://registry.yarnpkg.com/save-svg-as-png/-/save-svg-as-png-1.4.17.tgz#294442002772a24f1db1bf8a2aaf7df4ab0cdc55"
+  integrity sha512-7QDaqJsVhdFPwviCxkgHiGm9omeaMBe1VKbHySWU6oFB2LtnGCcYS13eVoslUgq6VZC6Tjq/HddBd1K6p2PGpA==
+
 sax@~1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
@@ -9881,6 +9903,20 @@ snapdragon@^0.8.1:
     source-map "^0.5.6"
     source-map-resolve "^0.5.0"
     use "^3.1.0"
+
+snapsvg-cjs@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/snapsvg-cjs/-/snapsvg-cjs-0.0.6.tgz#3b2f56af2573d3d364c3ed5bf8885745f4d2dde1"
+  integrity sha1-Oy9WryVz09Nkw+1b+IhXRfTS3eE=
+  dependencies:
+    snapsvg "0.5.1"
+
+snapsvg@0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/snapsvg/-/snapsvg-0.5.1.tgz#0caf52c79189a290746fc446cc5e863f6bdddfe3"
+  integrity sha1-DK9Sx5GJopB0b8RGzF6GP2vd3+M=
+  dependencies:
+    eve "~0.5.1"
 
 sockjs-client@1.4.0:
   version "1.4.0"
