@@ -84,7 +84,13 @@ export const exportToSvg = (id: string, fileName: string, callback?: (fileName: 
     } else {
         console.log(document.getElementById(id)?.outerHTML!);
     }
-  }
+}
+
+export const getSvgUrl = (canvasId:string): string => {
+    const content = document.getElementById(canvasId)?.outerHTML!;
+    var file = new Blob([content], { type: 'image/svg+xml' });
+    return URL.createObjectURL(file);
+}
 
 interface SuperpixelCanvasProps {
     id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
@@ -138,7 +144,7 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
                     canvasRef.current.setAttribute("content-script-type", currentColor); // storing color
                     updateSuperpixelSVG(superpixel,
                          annotatingTag === AnnotationTag.DEANNOTATING ? defaultcolor : fillColor,
-                         annotatingOpacity,
+                         annotatingTag === AnnotationTag.DEANNOTATING ? defaultOpacity : annotatingOpacity,
                          highlightLineWidth);
                     }
               }                

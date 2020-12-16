@@ -1,8 +1,8 @@
 import data from "./test.jpg.json";
 import './App.css';
 import './imageOverlay.css';
-import { Annotation, exportToPng,  exportToSvg,  SuperpixelCanvas } from "./superpixelCanvas";
-import { useState } from "react";
+import { Annotation, exportToPng,  exportToSvg,  getSvgUrl,  SuperpixelCanvas } from "./superpixelCanvas";
+import { useEffect, useState } from "react";
 const React = require('react');
 
 
@@ -18,15 +18,25 @@ const colors = ["remove", "#5db300",
 
 const annotatedList: Annotation[] = [ ];
 const canvasId = "mainCanvas";
+const svgDownBtnId = "svgDownload";
+const imgFileName = "./resource/test.jpg";
+const defaultColor = "black";
 
 const updateAnnotating = (tag: string, color:string, setAnnotating: (anno: Annotation) => void) => {
-  document.getElementById(canvasId)?.setAttribute("name", tag.toString());
+  document.getElementById(canvasId)?.setAttribute("name", tag);
   document.getElementById(canvasId)?.setAttribute("color-profile", color);
   setAnnotating(new Annotation(tag, color));
 }
 
 function App() {
-  const [annotating, setAnnotating] = useState(new Annotation("test", colors[1]));
+  const [annotating, setAnnotating] = useState(new Annotation("deannotating", defaultColor));
+  const [canvasReady, setCanvasReady] = useState(false);
+
+  useEffect( () => {
+    if (document.getElementById(canvasId)){
+      setCanvasReady(true);
+    }
+  });
 
   return (
     <div className="App">
@@ -34,21 +44,24 @@ function App() {
       {colors.map((color: string, tag:number) => (
         <button
           key={tag}
-          onClick={() => updateAnnotating(tag.toString(), color, setAnnotating)}
+          name={tag.toString()}
+          onClick={() => updateAnnotating(tag === 0 ? "deannotating" : tag.toString(), tag === 0 ? defaultColor : color, setAnnotating)}
         >
           {color}
         </button>
       ))}
     </div>
-    <div className="img-overlay-wrap">
-      <img src="./resource/test.jpg" alt={"sample"}/>
+    <div className="img-overlay-wrap" onMouseUp={() => document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId))}>
+      <img src={imgFileName} alt={"sample"}/>
       <SuperpixelCanvas id={canvasId} segmentationData={data} annotatedData={annotatedList} 
-          canvasWidth={1024} canvasHeight={768} defaultcolor={"black"} 
+          canvasWidth={1024} canvasHeight={768} defaultcolor={defaultColor} 
           annotating={annotating} onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}}/>
     </div>
-    <div>
-      <button className="export-button" onClick={() => exportToPng(canvasId, "test", "black")}>export to PNG</button>
-      <button className="export-button" onClick={() => exportToSvg(canvasId, "test")}>export to SVG</button>
+    <div>{
+      canvasReady && (<div>
+        <a href="#" onClick={() => exportToPng(canvasId, "test", "black")}>PNG download</a><br/>
+        <a id={svgDownBtnId} download={imgFileName.split("/")[imgFileName.split("/").length - 1]+".svg"} href-lang='image/svg+xml' href={getSvgUrl(canvasId)}>SVG download</a>
+      </div>)}
     </div>
     </div>
     );
