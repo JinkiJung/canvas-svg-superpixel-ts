@@ -21,6 +21,8 @@ const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
 const imgFileName = "./resource/test.jpg";
 const defaultColor = "black";
+const canvasWidth = 1024;
+const canvasHeight = 768;
 
 const updateAnnotating = (tag: string, color:string, setAnnotating: (anno: Annotation) => void) => {
   document.getElementById(canvasId)?.setAttribute("name", tag);
@@ -52,9 +54,9 @@ function App() {
       ))}
     </div>
     <div className="img-overlay-wrap" onMouseUp={() => document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId))}>
-      <img src={imgFileName} alt={"sample"}/>
+      <img src={imgFileName} width={canvasWidth} height={canvasHeight} alt={"sample"}/>
       <SuperpixelCanvas id={canvasId} segmentationData={data} annotatedData={annotatedList} 
-          canvasWidth={1024} canvasHeight={768} defaultcolor={defaultColor} 
+          canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultcolor={defaultColor} 
           annotating={annotating} onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}}/>
     </div>
     <div>{
