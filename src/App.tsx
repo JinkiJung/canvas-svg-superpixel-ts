@@ -1,4 +1,4 @@
-import data from "./20200924_101901.jpg_1024_768.json";
+import data from "./test.jpg.json";
 import './App.css';
 import './imageOverlay.css';
 import { Annotation, exportToPng,  exportToSvg,  getSvgUrl,  SuperpixelCanvas } from "./superpixelCanvas";
@@ -19,7 +19,7 @@ const colors = ["remove", "#5db300",
 const annotatedList: Annotation[] = [ ];
 const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
-const imgFileName = "./resource/20200924_101901.jpg";
+const imgFileName = "./resource/test.jpg";
 const defaultColor = "black";
 const canvasWidth = 1024;
 const canvasHeight = 768;
