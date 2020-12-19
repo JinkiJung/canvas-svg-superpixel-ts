@@ -25,8 +25,8 @@ const canvasWidth = 1024;
 const canvasHeight = 768;
 
 const updateAnnotating = (tag: string, color:string, setAnnotating: (anno: Annotation) => void) => {
-  document.getElementById(canvasId)?.setAttribute("name", tag);
-  document.getElementById(canvasId)?.setAttribute("color-profile", color);
+  document.getElementById(canvasId)?.setAttribute("name", color);
+  document.getElementById(canvasId)?.setAttribute("color-profile", tag);
   setAnnotating(new Annotation(tag, color));
 }
 
