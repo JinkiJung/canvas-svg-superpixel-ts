@@ -1,4 +1,4 @@
-import data from "./test.jpg.json";
+import data from "./20200924_094945.jpg.json";
 import './App.css';
 import './imageOverlay.css';
 import { Annotation, exportToPng,  exportToSvg,  getSvgUrl,  SuperpixelCanvas } from "./superpixelCanvas";
@@ -19,14 +19,14 @@ const colors = ["remove", "#5db300",
 const annotatedList: Annotation[] = [ ];
 const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
-const imgFileName = "./resource/test.jpg";
+const imgFileName = "./resource/20200924_094945.jpg";
 const defaultColor = "black";
 const canvasWidth = 1024;
 const canvasHeight = 768;
 
 const updateAnnotating = (tag: string, color:string, setAnnotating: (anno: Annotation) => void) => {
-  document.getElementById(canvasId)?.setAttribute("name", tag);
-  document.getElementById(canvasId)?.setAttribute("color-profile", color);
+  document.getElementById(canvasId)?.setAttribute("name", color);
+  document.getElementById(canvasId)?.setAttribute("color-profile", tag);
   setAnnotating(new Annotation(tag, color));
 }
 
@@ -34,11 +34,9 @@ function App() {
   const [annotating, setAnnotating] = useState(new Annotation("deannotating", defaultColor));
   const [canvasReady, setCanvasReady] = useState(false);
 
-  useEffect( () => {
-    if (document.getElementById(canvasId)){
-      setCanvasReady(true);
-    }
-  });
+  const onCanvasLoaded = () => {
+    setCanvasReady(true);
+  }
 
   return (
     <div className="App">
@@ -56,8 +54,8 @@ function App() {
     <div className="img-overlay-wrap" onMouseUp={() => document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId))}>
       <img src={imgFileName} width={canvasWidth} height={canvasHeight} alt={"sample"}/>
       <SuperpixelCanvas id={canvasId} segmentationData={data} annotatedData={annotatedList} 
-          canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultcolor={defaultColor} 
-          annotating={annotating} onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}}/>
+          canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultColor={defaultColor} 
+          annotating={annotating} onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}} onCanvasLoaded={onCanvasLoaded}/>
     </div>
     <div>{
       canvasReady && (<div>
