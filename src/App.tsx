@@ -5,7 +5,6 @@ import { Annotation, exportToPng,  exportToSvg,  getSvgUrl,  SuperpixelCanvas } 
 import { useEffect, useState } from "react";
 const React = require('react');
 
-
 const colors = ["remove", "#5db300", 
 "#e81123", 
 "#6917aa", 
@@ -16,7 +15,7 @@ const colors = ["remove", "#5db300",
 "#f7929a", 
 "#257ffe", ];
 
-const annotatedList: Annotation[] = [ ];
+const annotatedList: Annotation[] = [ {tag: "1", color: "#5db300", index: 1}, {tag: "2", color: "#e81123", index: 2}];
 const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
 const imgFileName = "./resource/20200924_094945.jpg";

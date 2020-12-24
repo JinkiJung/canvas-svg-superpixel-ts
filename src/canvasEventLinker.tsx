@@ -1,7 +1,5 @@
 import { AnnotationTag, ITag, SPId2number, } from "./superpixelCanvas";
 
-const React = require("react");
-const { useState, useEffect } = require("react");
 const Snap = require("snapsvg-cjs");
 
 export const updateSVGEvent = (canvasContainerId: string, canvasId: string, defaultColor: string,
@@ -21,8 +19,6 @@ const clearSuperpixel = (snapElement: Snap.Paper, defaultcolor: string, area: nu
 }
 
 const updateSuperpixelSVG = (component: Snap.Element, fill: string, opacity: number, strokeWidth: number, tag?: string, color?: string ) => {
-    console.log(tag);
-    console.log(color);
     if (tag && color){
         component.attr({...component.attr, fill, opacity, strokeWidth, tag, name: color,});
     }
@@ -72,7 +68,6 @@ const configureSuperpixelEvent = (canvasId: string, superpixel: any, defaultColo
             const annotatingTag = document.getElementById(canvasId)?.getAttribute("color-profile");
             const currentColor = superpixel.attr().name;
             const fillColor = document.getElementById(canvasId)?.getAttribute("name")!;
-            console.log(annotatingTag);
             if( annotatingTag !== AnnotationTag.EMPTY ){
                 document.getElementById(canvasId)?.setAttribute("content-script-type", currentColor); // storing color
                 updateSuperpixelSVG(superpixel,

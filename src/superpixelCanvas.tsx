@@ -1,3 +1,4 @@
+import { annotateCanvas } from "./canvasAnnotator";
 import { updateSVGEvent } from "./canvasEventLinker";
 import { CanvasSVGCreator } from "./canvasSVGCreator";
 
@@ -64,8 +65,6 @@ export const SPId2number = (spId: string): number => {
     return spId.startsWith("sp") ? parseInt(spId.substr(2)) : -1;
 }
 
-const defaultAnnotation = (id: number) => new Annotation(AnnotationTag.EMPTY, AnnotationTag.EMPTY, id);
-
 export const exportToPng = (canvasId: string, fileName: string, backgroundColor: string = "#000000", callback?: (fileName: string, content: string) => any) => {
     let fileNameSplit = fileName.split("/");
     let finalFileName = fileNameSplit[fileNameSplit.length - 1].split(".")[0] + ".png";
@@ -96,8 +95,6 @@ export const getSvgUrl = (canvasId:string): string => {
     return URL.createObjectURL(file);
 }
 
-
-
 interface SuperpixelCanvasProps {
     id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
      annotatedData: Annotation[], defaultColor: string, annotating: Annotation,
@@ -108,14 +105,9 @@ interface SuperpixelCanvasProps {
 export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> = 
 ({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultColor,
      annotating, onSegmentsUpdated, onSelectedTagUpdated, onCanvasLoaded}) => {
-    const [ segmentation, setSegmentation] = useState(segmentationData);
     const [ annotated, setAnnotated] = useState(annotatedData);
     const [ loaded, setLoaded ] = useState(false);
     const [ svgNotExist, setSvgNotExist ] = useState(false);
-    
-    if(segmentationData && segmentationData !== segmentation){
-        setSegmentation(segmentationData);
-    }
 
     const onSVGLoaded = (data: any, test:any) => { 
         const s = Snap("#" + canvasContainerId);
@@ -145,12 +137,13 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
         else if (loaded){
             var s = Snap("#" + id);
             if (s && s.selectAll("path").length){
+                annotateCanvas(annotatedData, defaultColor, defaultOpacity, defaultLineWidth, annotatedOpacity);
                 updateSVGEvent(canvasContainerId, id, defaultColor, defaultOpacity, annotatedOpacity, defaultLineWidth,
                     annotatingOpacity, highlightLineWidth, onSegmentsUpdated, onSelectedTagUpdated,);
                 onCanvasLoaded();
             }
         }
-    }, [loaded, segmentation, annotated]);
+    }, [loaded, annotated]);
     
     return (
         <div id={canvasContainerId}>{ 
@@ -159,17 +152,6 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
         }</div>
         );
 }
-
-const getAnnotationData = (
-    key: number,
-    annotatedData: Annotation[],
-    defaultAnnotating: Annotation
-): Annotation => {
-    for (const e of annotatedData) {
-        if (e.index === key) return e;
-    }
-    return defaultAnnotating;
-};
 
 export const getBoundingBox = (canvasId: string, ids: number[]) => {
     let pathString = "";
