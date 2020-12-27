@@ -57,6 +57,11 @@ export class Annotation implements IAnnotation {
     }
 }
 
+export const updateAnnotating = (canvasId: string, tag: string, color:string) => {
+    document.getElementById(canvasId)?.setAttribute("name", color);
+    document.getElementById(canvasId)?.setAttribute("color-profile", tag);
+  }
+
 export const number2SPId = (id: number): string => {
     return "sp" + id.toString();
 }
@@ -97,15 +102,14 @@ export const getSvgUrl = (canvasId:string): string => {
 
 interface SuperpixelCanvasProps {
     id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
-     annotatedData: Annotation[], defaultColor: string, annotating: Annotation,
+     annotatedData: Annotation[], defaultColor: string,
      onSegmentsUpdated: (...params: any[]) => void, onSelectedTagUpdated: (...params: any[]) => void,
      onCanvasLoaded: (...params: any[]) => void;
 }
 
 export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> = 
 ({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultColor,
-     annotating, onSegmentsUpdated, onSelectedTagUpdated, onCanvasLoaded}) => {
-    const [ annotated, setAnnotated] = useState(annotatedData);
+     onSegmentsUpdated, onSelectedTagUpdated, onCanvasLoaded}) => {
     const [ loaded, setLoaded ] = useState(false);
     const [ svgNotExist, setSvgNotExist ] = useState(false);
 
@@ -121,30 +125,30 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
             setSvgNotExist(true);
         }
     }
-    
-    async function loadSVG(fileName: string) {
-        const result = await Snap.load(fileName, onSVGLoaded);
-    };
 
     const onCanvasSVGCreated = () => {
         setLoaded(true);
     }
 
-    useEffect(async () => {
+    useEffect( () => {
+        async function loadSVG(fileName: string) {
+            await Snap.load(fileName, onSVGLoaded);
+        };
+        
         if (!loaded && !svgNotExist){
             loadSVG(fileName);
         }
         else if (loaded){
             var s = Snap("#" + id);
             if (s && s.selectAll("path").length){
-                annotateCanvas(annotatedData, defaultColor, defaultOpacity, defaultLineWidth, annotatedOpacity);
                 updateSVGEvent(canvasContainerId, id, defaultColor, defaultOpacity, annotatedOpacity, defaultLineWidth,
                     annotatingOpacity, highlightLineWidth, onSegmentsUpdated, onSelectedTagUpdated,);
+                annotateCanvas(annotatedData, defaultColor, defaultOpacity, defaultLineWidth, annotatedOpacity);
                 onCanvasLoaded();
             }
         }
-    }, [loaded, annotated]);
-    
+    }, [loaded, svgNotExist]);
+
     return (
         <div id={canvasContainerId}>{ 
             svgNotExist && 
@@ -155,7 +159,7 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
 
 export const getBoundingBox = (canvasId: string, ids: number[]) => {
     let pathString = "";
-    ids.map( (id) => {const s = document.getElementById("sp"+id)!; pathString += (s.getAttribute("d") + " ") });
+    ids.forEach( (id) => {const s = document.getElementById("sp"+id)!; pathString += (s.getAttribute("d") + " ") });
     const s = Snap("#"+canvasId);
     const path = s.path(pathString);
     //path.attr( {visibility: "hidden"} );
@@ -169,7 +173,7 @@ export const clearEditor = (canvasId: string, defaultcolor: string) => {
     const paths = s.selectAll('path');
     paths.forEach(function(element: Snap.Set){
         const e = element.attr;
-        element.attr({... e, name: AnnotationTag.EMPTY, tag: AnnotationTag.EMPTY, fill: defaultcolor, style: "stroke-width: 1; opacity: 0.1;", });
+        element.attr({...e, name: AnnotationTag.EMPTY, tag: AnnotationTag.EMPTY, fill: defaultcolor, style: "stroke-width: 1; opacity: 0.1;",});
     }, this);
 }
 

@@ -1,7 +1,7 @@
 import { Annotation, AnnotationTag, ICoordinates, number2SPId } from "./superpixelCanvas";
 
 const React = require("react");
-const { useState, useEffect } = require("react");
+const { useEffect } = require("react");
 const Snap = require("snapsvg-cjs");
 
 const Direction = {
