@@ -1,13 +1,12 @@
 import { annotateCanvas } from "./canvasAnnotator";
 import { updateSVGEvent } from "./canvasEventLinker";
+import { CanvasGridProvider } from "./canvasGridProvider";
 import { CanvasSVGCreator } from "./canvasSVGCreator";
 
 const React = require("react");
 const { useState, useEffect } = require("react");
 const Snap = require("snapsvg-cjs");
 const svgToPng = require("save-svg-as-png");
-
-const fileName = "./resource/20200924_094945.jpg.svg";
 
 export enum AnnotationTag{
   EMPTY = "empty",
@@ -26,6 +25,9 @@ const annotatingOpacity = 0.9;
 const defaultLineWidth = 0;
 const highlightLineWidth = 2;
 const canvasContainerId = "canvasContainer";
+const canvasGridId = "canvasGrid";
+const gridLineWidth = 0.5;
+const gridOpacity = 0.8;
 
 export interface IPoint{
     x: number,
@@ -102,16 +104,18 @@ export const getSvgUrl = (canvasId:string): string => {
 
 interface SuperpixelCanvasProps {
     id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
-     annotatedData: Annotation[], defaultColor: string,
+     annotatedData: Annotation[], defaultColor: string, gridOn: boolean, svgName: string,
      onSegmentsUpdated: (...params: any[]) => void, onSelectedTagUpdated: (...params: any[]) => void,
      onCanvasLoaded: (...params: any[]) => void;
 }
 
 export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> = 
-({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultColor,
+({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultColor, gridOn, svgName,
      onSegmentsUpdated, onSelectedTagUpdated, onCanvasLoaded}) => {
     const [ loaded, setLoaded ] = useState(false);
+    const [ gridReady, setGridReady ] = useState( false);
     const [ svgNotExist, setSvgNotExist ] = useState(false);
+    const [ createdSvg, setCreatedSvg ] = useState(undefined);
 
     const onSVGLoaded = (data: any, test:any) => { 
         const s = Snap("#" + canvasContainerId);
@@ -136,24 +140,30 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
         };
         
         if (!loaded && !svgNotExist){
-            loadSVG(fileName);
+            loadSVG(svgName);
         }
-        else if (loaded){
+        else if (!loaded && svgNotExist){
+            setCreatedSvg(
+                <CanvasSVGCreator id={id} canvasWidth={canvasWidth} canvasHeight={canvasHeight} segmentationData={segmentationData} 
+                defaultColor={defaultColor} defaultOpacity={defaultOpacity} defaultLineWidth={defaultLineWidth} onCanvasSVGCreated={onCanvasSVGCreated} />);
+        }
+        else if (loaded && gridReady){
             var s = Snap("#" + id);
             if (s && s.selectAll("path").length){
+                annotateCanvas(annotatedData, defaultColor, defaultOpacity, defaultLineWidth, annotatedOpacity);
                 updateSVGEvent(canvasContainerId, id, defaultColor, defaultOpacity, annotatedOpacity, defaultLineWidth,
                     annotatingOpacity, highlightLineWidth, onSegmentsUpdated, onSelectedTagUpdated,);
-                annotateCanvas(annotatedData, defaultColor, defaultOpacity, defaultLineWidth, annotatedOpacity);
                 onCanvasLoaded();
             }
         }
-    }, [loaded, svgNotExist]);
-
+    }, [loaded, svgNotExist, gridReady, createdSvg]);
+    
     return (
-        <div id={canvasContainerId}>{ 
-            svgNotExist && 
-            <CanvasSVGCreator id={id} canvasWidth={canvasWidth} canvasHeight={canvasHeight} segmentationData={segmentationData} defaultColor={defaultColor} defaultOpacity={defaultOpacity} defaultLineWidth={defaultLineWidth} onCanvasSVGCreated={onCanvasSVGCreated} />
-        }</div>
+        <div id={canvasContainerId}>
+            { createdSvg }
+            { loaded &&
+                <CanvasGridProvider id={canvasGridId} canvasId={id} gridOn={gridOn} gridLineWidth={gridLineWidth} gridOpacity={gridOpacity} onGridReady={() => setGridReady(true)}/>}
+        </div>
         );
 }
 
@@ -162,7 +172,6 @@ export const getBoundingBox = (canvasId: string, ids: number[]) => {
     ids.forEach( (id) => {const s = document.getElementById("sp"+id)!; pathString += (s.getAttribute("d") + " ") });
     const s = Snap("#"+canvasId);
     const path = s.path(pathString);
-    //path.attr( {visibility: "hidden"} );
     const bbox = path.getBBox();
     path.remove();
     return { left: bbox.x, top: bbox.y, width: bbox.width, height: bbox.height };

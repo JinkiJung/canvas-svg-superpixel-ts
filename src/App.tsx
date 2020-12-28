@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import data from "./20200924_094945.jpg.json";
 import './App.css';
 import './imageOverlay.css';
@@ -18,11 +19,15 @@ const annotatedList: Annotation[] = [ {tag: "1", color: "#5db300", index: 1}, {t
 const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
 const imgFileName = "./resource/20200924_094945.jpg";
+const svgFileName = "./resource/20200924_094945.jpg.svg";
 const defaultColor = "black";
 const canvasWidth = 1024;
 const canvasHeight = 768;
 
 function App() {
+  const [ gridOn, setGridOn ] = useState(false);
+  
+  useEffect( () => {} , [gridOn]);
 
   return (
     <div className="App">
@@ -31,19 +36,21 @@ function App() {
           <button
             key={tag}
             name={tag.toString()}
+            style={{backgroundColor: color}}
             onClick={() => updateAnnotating(canvasId, tag === 0 ? "deannotating" : tag.toString(), tag === 0 ? defaultColor : color)}
           >
-            {color}
+            {tag === 0 ? 'remove' : tag}
           </button>
         ))}
       </div>
       <div className="img-overlay-wrap" onMouseUp={() => document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId))}>
         <img src={imgFileName} width={canvasWidth} height={canvasHeight} alt={"sample"}/>
-        <SuperpixelCanvas id={canvasId} segmentationData={data} annotatedData={annotatedList} 
-            canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultColor={defaultColor} 
+        <SuperpixelCanvas id={canvasId} segmentationData={data} svgName={svgFileName} annotatedData={annotatedList} 
+            canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultColor={defaultColor} gridOn={gridOn}
             onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}} onCanvasLoaded={() => console.log("Canvas loaded!")} />
       </div>
       <div>
+        <input type={"checkbox"} onChange={(e) => setGridOn(e.target.checked)}/>Turn on grid<br />
         <a href="#" onClick={() => exportToPng(canvasId, "test", "black")}>PNG download</a><br/>
         <a id={svgDownBtnId} download={imgFileName.split("/")[imgFileName.split("/").length - 1]+".svg"} href-lang='image/svg+xml' href={getSvgUrl(canvasId)}>SVG download</a>
       </div>

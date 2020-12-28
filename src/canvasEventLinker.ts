@@ -1,5 +1,4 @@
 import { AnnotationTag, ITag, SPId2number, } from "./superpixelCanvas";
-
 const Snap = require("snapsvg-cjs");
 
 export const updateSVGEvent = (canvasContainerId: string, canvasId: string, defaultColor: string,
