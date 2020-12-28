@@ -19,3 +19,7 @@
   .img-overlay-wrap:hover {
     opacity: 0.9;
   }
+
+  .img-grid {
+    pointer-events: none;
+  }
