@@ -72,32 +72,47 @@ export const SPId2number = (spId: string): number => {
     return spId.startsWith("sp") ? parseInt(spId.substr(2)) : -1;
 }
 
+const configureSvg = (svgElement: HTMLElement) => {
+    const svg = svgElement.firstElementChild;
+    for (const element of svg?.children!){
+        element.setAttribute("style", "stroke-width: 0; opacity: 1;");
+    }
+    return svg;
+}
+
+const prepare2Export = (canvasId: string) => {
+    const newElement = document.createElement("exportSvg");
+    const clonedNode = document.getElementById(canvasId)?.cloneNode(true);
+    newElement.appendChild(clonedNode!);
+    return configureSvg(newElement!);
+}
+
 export const exportToPng = (canvasId: string, fileName: string, backgroundColor: string = "#000000", callback?: (fileName: string, content: string) => any) => {
     let fileNameSplit = fileName.split("/");
     let finalFileName = fileNameSplit[fileNameSplit.length - 1].split(".")[0] + ".png";
 
     if (callback){
-        svgToPng.svgAsPngUri(document.getElementById(canvasId),
+        svgToPng.svgAsPngUri(prepare2Export(canvasId),
         finalFileName, {backgroundColor: backgroundColor}).then((uri: string) => callback(finalFileName, uri));
     } else {
-        svgToPng.saveSvgAsPng(document.getElementById(canvasId), finalFileName, {backgroundColor: backgroundColor})
+        svgToPng.saveSvgAsPng(prepare2Export(canvasId), finalFileName, {backgroundColor: backgroundColor})
     }
 }
 
-export const exportToSvg = (id: string, fileName: string, callback?: (fileName: string, content: string) => any) => {
+export const exportToSvg = (canvasId: string, fileName: string, callback?: (fileName: string, content: string) => any) => {
     let fileNameSplit = fileName.split("/");
     let finalFileName = fileNameSplit[fileNameSplit.length - 1].split(".")[0] + ".svg";
 
     if (callback){
-        const uri = "data:image/svg+xml;utf8,"+ document.getElementById(id)?.outerHTML!;
+        const uri = "data:image/svg+xml;utf8,"+ prepare2Export(canvasId)?.outerHTML!;
         callback(finalFileName, uri);
     } else {
-        console.log(document.getElementById(id)?.outerHTML!);
+        console.log(prepare2Export(canvasId)?.outerHTML!);
     }
 }
 
 export const getSvgUrl = (canvasId:string): string => {
-    const content = document.getElementById(canvasId)?.outerHTML!;
+    const content = prepare2Export(canvasId)?.outerHTML!;
     var file = new Blob([content], { type: 'image/svg+xml' });
     return URL.createObjectURL(file);
 }
@@ -177,12 +192,12 @@ export const getBoundingBox = (canvasId: string, ids: number[]) => {
     return { left: bbox.x, top: bbox.y, width: bbox.width, height: bbox.height };
 }
 
-export const clearEditor = (canvasId: string, defaultcolor: string) => {
+export const clearCanvas = (canvasId: string, defaultcolor: string) => {
     const s = Snap("#"+canvasId);
     const paths = s.selectAll('path');
     paths.forEach(function(element: Snap.Set){
         const e = element.attr;
-        element.attr({...e, name: AnnotationTag.EMPTY, tag: AnnotationTag.EMPTY, fill: defaultcolor, style: "stroke-width: 1; opacity: 0.1;",});
+        element.attr({...e, name: AnnotationTag.EMPTY, tag: AnnotationTag.EMPTY, fill: defaultcolor, style: `stroke-width: ${defaultLineWidth}; opacity: ${defaultOpacity};`,});
     }, this);
 }
 

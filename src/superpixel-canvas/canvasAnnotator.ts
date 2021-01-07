@@ -19,3 +19,20 @@ export const annotateCanvas = (annotatedData: Annotation[], defaultColor: string
         });
     }
 }
+
+export const importAnnotatedData = (json: any): Annotation[] => {
+    //loadedAnnotatedData["segmentation"].map( (e) => new Annotation(e.tag, e.color, parseInt(e.index)))
+    const keys: string[] = [];
+        if (keys.length === 0) {
+            for (let k in json["segmentation"]) keys.push(k);
+        }
+    const annotatedData: Annotation[] = [];
+    for (const label in json["segmentation"]){
+        const foundElement = json["categories"].filter( (e: any) => e.name === label);
+        const color = foundElement.length > 0 ? foundElement[0].color : "#000000";
+        json["segmentation"][label].forEach((element: number) => {
+            annotatedData.push(new Annotation(label, color, element));
+        });
+    }
+    return annotatedData;   
+}

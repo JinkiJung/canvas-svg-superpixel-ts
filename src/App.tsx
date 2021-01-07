@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import data from "./20200924_094945.jpg.json";
+import loadedAnnotatedData from "./annotatedData.json";
 import './App.css';
 import './imageOverlay.css';
-import { Annotation, exportToPng, getSvgUrl,  SuperpixelCanvas, updateAnnotating } from "./superpixelCanvas";
+import { importAnnotatedData } from "./superpixel-canvas/canvasAnnotator";
+import { Annotation, clearCanvas, exportToPng, getSvgUrl,  IAnnotation,  SuperpixelCanvas, updateAnnotating } from "./superpixel-canvas/superpixelCanvas";
 const React = require('react');
 
 const colors = ["remove", "#5db300", 
@@ -15,7 +17,6 @@ const colors = ["remove", "#5db300",
 "#f7929a", 
 "#257ffe", ];
 
-const annotatedList: Annotation[] = [ {tag: "1", color: "#5db300", index: 1}, {tag: "2", color: "#e81123", index: 2}];
 const canvasId = "mainCanvas";
 const svgDownBtnId = "svgDownload";
 const imgFileName = "./resource/20200924_094945.jpg";
@@ -23,6 +24,10 @@ const svgFileName = "./resource/20200924_094945.jpg.svg";
 const defaultColor = "black";
 const canvasWidth = 1024;
 const canvasHeight = 768;
+const annotatedList: Annotation[] = importAnnotatedData(loadedAnnotatedData);
+//[ {tag: "1", color: "#5db300", index: 1}, {tag: "2", color: "#e81123", index: 2}];
+
+const activateLinkDownload = () => { document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId)); document.getElementById(svgDownBtnId)?.click(); }
 
 function App() {
   const [ gridOn, setGridOn ] = useState(false);
@@ -43,7 +48,7 @@ function App() {
           </button>
         ))}
       </div>
-      <div className="img-overlay-wrap" onMouseUp={() => document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId))}>
+      <div className="img-overlay-wrap">
         <img src={imgFileName} width={canvasWidth} height={canvasHeight} alt={"sample"}/>
         <SuperpixelCanvas id={canvasId} segmentationData={data} svgName={svgFileName} annotatedData={annotatedList} 
             canvasWidth={canvasWidth} canvasHeight={canvasHeight} defaultColor={defaultColor} gridOn={gridOn}
@@ -51,8 +56,10 @@ function App() {
       </div>
       <div>
         <input type={"checkbox"} onChange={(e) => setGridOn(e.target.checked)}/>Turn on grid<br />
-        <a href="#" onClick={() => exportToPng(canvasId, "test", "black")}>PNG download</a><br/>
-        <a id={svgDownBtnId} download={imgFileName.split("/")[imgFileName.split("/").length - 1]+".svg"} href-lang='image/svg+xml' href={getSvgUrl(canvasId)}>SVG download</a>
+        <button onClick={() => clearCanvas(canvasId, "black")}>Clear canvas</button><br />
+        <button onClick={() => exportToPng(canvasId, "test", "black")}>PNG download</button><br/>
+        <button type="submit" onClick={activateLinkDownload}>SVG download</button>
+        <a id={svgDownBtnId} download={imgFileName.split("/")[imgFileName.split("/").length - 1]+".svg"} href-lang='image/svg+xml' href={"#"} hidden>download link</a>
       </div>
     </div>
     );
