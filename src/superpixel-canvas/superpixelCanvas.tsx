@@ -72,25 +72,31 @@ export const SPId2number = (spId: string): number => {
     return spId.startsWith("sp") ? parseInt(spId.substr(2)) : -1;
 }
 
-const configureSvg = (svgElement: HTMLElement) => {
+const configureSvg = (svgElement: HTMLElement, empty: boolean) => {
     const svg = svgElement.firstElementChild;
     for (const element of svg?.children!){
-        element.setAttribute("style", "stroke-width: 0; opacity: 1;");
+        if (empty){
+            element.setAttribute("fill", "#000000");
+            element.setAttribute("tag", "empty");
+            element.setAttribute("name", "empty");
+            element.setAttribute("style", `stroke-width: 0; opacity: ${defaultOpacity};`);
+        }else{
+            element.setAttribute("style", "stroke-width: 0; opacity: 1;");
+        }
     }
     return svg;
 }
 
-const prepare2Export = (canvasId: string) => {
+const prepare2Export = (canvasId: string, empty: boolean = false) => {
     const newElement = document.createElement("exportSvg");
     const clonedNode = document.getElementById(canvasId)?.cloneNode(true);
     newElement.appendChild(clonedNode!);
-    return configureSvg(newElement!);
+    return configureSvg(newElement!, empty);
 }
 
 export const exportToPng = (canvasId: string, fileName: string, backgroundColor: string = "#000000", callback?: (fileName: string, content: string) => any) => {
     let fileNameSplit = fileName.split("/");
     let finalFileName = fileNameSplit[fileNameSplit.length - 1].split(".")[0] + ".png";
-
     if (callback){
         svgToPng.svgAsPngUri(prepare2Export(canvasId),
         finalFileName, {backgroundColor: backgroundColor}).then((uri: string) => callback(finalFileName, uri));
@@ -111,8 +117,8 @@ export const exportToSvg = (canvasId: string, fileName: string, callback?: (file
     }
 }
 
-export const getSvgUrl = (canvasId:string): string => {
-    const content = prepare2Export(canvasId)?.outerHTML!;
+export const getSvgUrl = (canvasId:string, empty: boolean = false): string => {
+    const content = prepare2Export(canvasId, empty)?.outerHTML!;
     var file = new Blob([content], { type: 'image/svg+xml' });
     return URL.createObjectURL(file);
 }

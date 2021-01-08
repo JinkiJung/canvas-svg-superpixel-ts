@@ -27,7 +27,8 @@ const canvasHeight = 768;
 const annotatedList: Annotation[] = importAnnotatedData(loadedAnnotatedData);
 //[ {tag: "1", color: "#5db300", index: 1}, {tag: "2", color: "#e81123", index: 2}];
 
-const activateLinkDownload = () => { document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId)); document.getElementById(svgDownBtnId)?.click(); }
+const downloadAnnotatedSvg = () => { document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId)); document.getElementById(svgDownBtnId)?.click(); }
+const downloadEmptySvg = () => { document.getElementById(svgDownBtnId)?.setAttribute("href", getSvgUrl(canvasId, true)); document.getElementById(svgDownBtnId)?.click(); }
 
 function App() {
   const [ gridOn, setGridOn ] = useState(false);
@@ -55,10 +56,11 @@ function App() {
             onSegmentsUpdated={(data) => {}} onSelectedTagUpdated={(data) => {}} onCanvasLoaded={() => console.log("Canvas loaded!")} />
       </div>
       <div>
-        <input type={"checkbox"} onChange={(e) => setGridOn(e.target.checked)}/>Turn on grid<br />
-        <button onClick={() => clearCanvas(canvasId, "black")}>Clear canvas</button><br />
-        <button onClick={() => exportToPng(canvasId, "test", "black")}>PNG download</button><br/>
-        <button type="submit" onClick={activateLinkDownload}>SVG download</button>
+        <input type={"checkbox"} onChange={(e) => setGridOn(e.target.checked)}/>turn on grid<br />
+        <button onClick={() => clearCanvas(canvasId, "black")}>clear canvas</button><br />
+        <button onClick={() => exportToPng(canvasId, "test", "black")}>annotated PNG download</button><br/>
+        <button type="submit" onClick={downloadAnnotatedSvg}>annotated SVG download</button>
+        <button type="submit" onClick={downloadEmptySvg}>empty SVG download</button>
         <a id={svgDownBtnId} download={imgFileName.split("/")[imgFileName.split("/").length - 1]+".svg"} href-lang='image/svg+xml' href={"#"} hidden>download link</a>
       </div>
     </div>
