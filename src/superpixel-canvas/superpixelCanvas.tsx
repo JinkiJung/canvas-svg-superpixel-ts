@@ -80,7 +80,7 @@ const configureSvg = (svgElement: HTMLElement, empty: boolean) => {
             element.setAttribute("tag", "empty");
             element.setAttribute("name", "empty");
             element.setAttribute("style", `stroke-width: 0; opacity: ${defaultOpacity};`);
-        }else{
+        } else {
             element.setAttribute("style", "stroke-width: 0; opacity: 1;");
         }
     }
@@ -177,7 +177,7 @@ export const SuperpixelCanvas: React.FC<SuperpixelCanvasProps> =
                 onCanvasLoaded();
             }
         }
-    }, [loaded, svgNotExist, gridReady, createdSvg]);
+    }, [loaded, svgNotExist, gridReady, annotatedData]);
     
     return (
         <div id={canvasContainerId}>
